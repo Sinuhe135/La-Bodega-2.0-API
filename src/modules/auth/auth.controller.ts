@@ -1,8 +1,13 @@
-import { Request, Response } from 'express'
+import { Request, Response } from 'express-serve-static-core'
 import * as authService from './auth.service'
+import { LoginDto } from './dtos/login.dto'
+import { LoginResponseDto } from './dtos/login-response.dto'
 
-export function login(req: Request, res: Response) {
-    authService.login()
+export function login(
+    req: Request<{}, {}, LoginDto>,
+    res: Response<LoginResponseDto>
+) {
+    const jwt = authService.login(req.body.keyHash)
 
-    res.send('Login')
+    res.status(200).send({ jwt: jwt })
 }

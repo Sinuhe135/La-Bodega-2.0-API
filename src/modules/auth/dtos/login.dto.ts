@@ -1,3 +1,3 @@
-export interface LoginDTO {
+export type LoginDto = {
     keyHash: string
 }
