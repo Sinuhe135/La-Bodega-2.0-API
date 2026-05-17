@@ -3,11 +3,11 @@ import * as authService from './auth.service'
 import { LoginDto } from './dtos/login.dto'
 import { LoginResponseDto } from './dtos/login-response.dto'
 
-export function login(
+export async function login(
     req: Request<{}, {}, LoginDto>,
     res: Response<LoginResponseDto>
 ) {
-    const jwt = authService.login(req.body.keyHash)
+    const jwt = await authService.login(req.body.keyHash)
 
     res.status(200).send({ jwt: jwt })
 }

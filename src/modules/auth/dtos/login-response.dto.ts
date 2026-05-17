@@ -1,3 +1,3 @@
-export type LoginResponseDto = {
+export interface LoginResponseDto {
     jwt: string
 }
