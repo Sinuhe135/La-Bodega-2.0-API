@@ -1,7 +1,7 @@
 import { generateAccessToken } from '../../utils/jsonwebtoken.utils'
-import bcrypt from 'bcrypt'
 import { insertUser, selectAuthByUsername } from './auth.repository'
 import { AppError } from '../../utils/app_error.utils'
+import { hashText, verifyHash } from '../../utils/hash.utils'
 
 export async function signup(
     username: string,
@@ -15,19 +15,24 @@ export async function signup(
     const doubleKeyHash = await hashText(keyHash)
     const id = await insertUser(username, doubleKeyHash)
 
-    const jwtPayload = {
-        id: id,
-    }
-
-    const jwt = generateAccessToken(jwtPayload)
+    const jwt = generateAccessToken({ id: id })
     return jwt
 }
 
-export async function login(keyHash: string): Promise<string> {
-    return 'of'
-}
+export async function login(
+    username: string,
+    keyHash: string
+): Promise<string> {
+    const auth = await selectAuthByUsername(username)
+    if (!auth) {
+        throw new AppError(401, 'Invalid username or key')
+    }
 
-async function hashText(text: string): Promise<string> {
-    const salt = await bcrypt.genSalt()
-    return await bcrypt.hash(text, salt)
+    const isKeyValid = await verifyHash(keyHash, auth.keyHash)
+    if (!isKeyValid) {
+        throw new AppError(401, 'Invalid username or key')
+    }
+
+    const jwt = generateAccessToken({ id: auth.id })
+    return jwt
 }

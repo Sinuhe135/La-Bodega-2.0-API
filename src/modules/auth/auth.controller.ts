@@ -1,7 +1,7 @@
 import { Request, Response } from 'express-serve-static-core'
 import * as authService from './auth.service'
 import { LoginDto } from './dtos/login.dto'
-import { LoginResponseDto } from './dtos/login-response.dto'
+import { LoginResponseDto } from './dtos/login_response.dto'
 import { ErrorResponseDto } from '../../types/error_response.dto'
 import { AppError } from '../../utils/app_error.utils'
 
@@ -22,15 +22,22 @@ export async function signup(
         }
 
         res.status(500).send({ error: 'Internal server error' })
-        return
     }
 }
 
 export async function login(
     req: Request<{}, {}, LoginDto>,
-    res: Response<LoginResponseDto>
+    res: Response<LoginResponseDto | ErrorResponseDto>
 ) {
-    const jwt = await authService.login(req.body.keyHash)
+    try {
+        const jwt = await authService.login(req.body.username, req.body.keyHash)
+        res.status(200).send({ jwt: jwt })
+    } catch (error) {
+        if (error instanceof AppError) {
+            res.status(error.statusCode).send({ error: error.message })
+            return
+        }
 
-    res.status(200).send({ jwt: jwt })
+        res.status(500).send({ error: 'Internal server error' })
+    }
 }
