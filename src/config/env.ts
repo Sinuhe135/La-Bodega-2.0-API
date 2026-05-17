@@ -6,6 +6,7 @@ const env = {
     MYSQL_DATABASE: process.env.MYSQL_DATABASE ?? '',
     MYSQL_PORT: parseInt(process.env.MYSQL_PORT ?? '3306'),
     NODE_ENV: process.env.NODE_ENV ?? 'development',
+    JWT_KEY: process.env.JWT_KEY ?? '',
 }
 
 export default env
