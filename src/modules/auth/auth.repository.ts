@@ -9,7 +9,6 @@ export async function selectAuthByUsername(
         'select id, username, keyHash from AUTH where username = ?',
         [username]
     )
-
     return results[0]
 }
 

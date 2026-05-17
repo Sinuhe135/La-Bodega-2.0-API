@@ -1,7 +1,7 @@
-import { generateAccessToken } from '../../utils/jsonwebtoken.utils'
 import { insertUser, selectAuthByUsername } from './auth.repository'
 import { AppError } from '../../utils/app_error.utils'
 import { hashText, verifyHash } from '../../utils/hash.utils'
+import { generateAuthJwt } from '../../utils/jsonwebtoken.utils'
 
 export async function signup(
     username: string,
@@ -15,7 +15,7 @@ export async function signup(
     const doubleKeyHash = await hashText(keyHash)
     const id = await insertUser(username, doubleKeyHash)
 
-    const jwt = generateAccessToken({ id: id })
+    const jwt = generateAuthJwt({ id: id })
     return jwt
 }
 
@@ -33,6 +33,6 @@ export async function login(
         throw new AppError(401, 'Invalid username or key')
     }
 
-    const jwt = generateAccessToken({ id: auth.id })
+    const jwt = generateAuthJwt({ id: auth.id })
     return jwt
 }
