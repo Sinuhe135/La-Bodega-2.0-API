@@ -1,7 +1,22 @@
 import { ResultSetHeader } from 'mysql2'
 import pool from '../../config/database'
+import { AuthRow } from './row_types/auth.row'
 
-export async function createUser(keyHash: string): Promise<number> {
+export async function selectAuthByUsername(
+    username: string
+): Promise<AuthRow | undefined> {
+    const [results] = await pool.query<AuthRow[]>(
+        'select id, username, keyHash from AUTH where username = ?',
+        [username]
+    )
+
+    return results[0]
+}
+
+export async function insertUser(
+    username: string,
+    keyHash: string
+): Promise<number> {
     const conn = await pool.getConnection()
     try {
         await conn.beginTransaction()
@@ -10,8 +25,8 @@ export async function createUser(keyHash: string): Promise<number> {
             'insert into USER () values ()'
         )
         await conn.query<ResultSetHeader>(
-            `insert into AUTH (id,keyHash) values (?,?)`,
-            [result.insertId, keyHash]
+            `insert into AUTH (id,username, keyHash) values (?,?,?)`,
+            [result.insertId, username, keyHash]
         )
 
         await conn.commit()

@@ -1,28 +1,30 @@
 import { generateAccessToken } from '../../utils/jsonwebtoken.utils'
-import { createUser } from './auth.repository'
 import bcrypt from 'bcrypt'
+import { insertUser, selectAuthByUsername } from './auth.repository'
+import { AppError } from '../../utils/app_error.utils'
 
-export async function signup(keyHash: string): Promise<string> {
+export async function signup(
+    username: string,
+    keyHash: string
+): Promise<string> {
+    const existingAuth = await selectAuthByUsername(username)
+    if (existingAuth) {
+        throw new AppError(400, 'Username already exists')
+    }
+
     const doubleKeyHash = await hashText(keyHash)
-    const id = await createUser(doubleKeyHash)
+    const id = await insertUser(username, doubleKeyHash)
 
     const jwtPayload = {
         id: id,
     }
 
-    const jwt = generateAccessToken(jwtPayload) // 1 hour
+    const jwt = generateAccessToken(jwtPayload)
     return jwt
 }
 
 export async function login(keyHash: string): Promise<string> {
-    const doubleKeyHash = await hashText(keyHash)
-
-    const id = await createUser(doubleKeyHash)
-
-    // create jwt
-
-    const jwt = `Key hash: ${keyHash}, User ID: ${id}`
-    return jwt
+    return 'of'
 }
 
 async function hashText(text: string): Promise<string> {
