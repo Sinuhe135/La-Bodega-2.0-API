@@ -1,21 +1,21 @@
 import { Request, Response } from 'express-serve-static-core'
-import * as groupsService from './groups.service'
-import { CreateGroupDto } from './dtos/create_group.dto'
-import { CreateGroupResponseDto } from './dtos/create_group_reponse.dto'
+import * as groupsService from './category.service'
+import { CreateCategoryDto } from './dtos/create_category.dto'
+import { CreateCategoryResponseDto } from './dtos/create_category_reponse.dto'
 import { AppError } from '../../utils/app_error.utils'
 import { ErrorResponse } from '../../types/error_response'
 import { AuthLocals } from '../../types/auth_locals'
 
-export async function createGroup(
-    req: Request<{}, {}, CreateGroupDto>,
-    res: Response<CreateGroupResponseDto | ErrorResponse, AuthLocals>
+export async function createCategory(
+    req: Request<{}, {}, CreateCategoryDto>,
+    res: Response<CreateCategoryResponseDto | ErrorResponse, AuthLocals>
 ) {
     try {
-        const group = await groupsService.createGroup(
+        const category = await groupsService.createCategory(
             req.body.name,
             res.locals.userId
         )
-        res.status(201).send(group)
+        res.status(201).send(category)
     } catch (error) {
         if (error instanceof AppError) {
             res.status(error.statusCode).send({ error: error.message })

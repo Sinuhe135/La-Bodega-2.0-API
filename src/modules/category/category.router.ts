@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import { createGroup } from './groups.controller'
+import { createCategory } from './category.controller'
 import { requireAuthMiddleware } from '../../middleware/auth.middleware'
 
 const router = Router()
 
-router.post('/', requireAuthMiddleware, createGroup)
+router.post('/', requireAuthMiddleware, createCategory)
 
 export default router
