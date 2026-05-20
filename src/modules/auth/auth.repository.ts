@@ -12,6 +12,14 @@ export async function selectAuthByUsername(
     return results[0]
 }
 
+export async function selectAuth(id: number): Promise<AuthRow | undefined> {
+    const [results] = await pool.query<AuthRow[]>(
+        'select id, username, keyHash from AUTH where id = ?',
+        [id]
+    )
+    return results[0]
+}
+
 export async function insertUser(
     username: string,
     keyHash: string
@@ -39,9 +47,3 @@ export async function insertUser(
         throw error
     }
 }
-
-// export async function getAllUsers(): Promise<UserRow[]> {
-//     const [results, fields] = await pool.query<UserRow[]>('select * from USER')
-
-//     return results
-// }

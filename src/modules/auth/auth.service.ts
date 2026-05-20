@@ -1,7 +1,8 @@
-import { insertUser, selectAuthByUsername } from './auth.repository'
+import { insertUser, selectAuth, selectAuthByUsername } from './auth.repository'
 import { AppError } from '../../utils/app_error.utils'
 import { hashText, verifyHash } from '../../utils/hash.utils'
 import { generateAuthJwt } from '../../utils/jsonwebtoken.utils'
+import { CurrentUserResponseDto } from './dtos/current_user_response.dto'
 
 export async function signup(
     username: string,
@@ -17,6 +18,14 @@ export async function signup(
 
     const jwt = generateAuthJwt({ id: id })
     return jwt
+}
+
+export async function getAuth(id: number): Promise<CurrentUserResponseDto> {
+    const auth = await selectAuth(id)
+    if (!auth) {
+        throw new AppError(404, 'User not found')
+    }
+    return { id: auth.id, username: auth.username }
 }
 
 export async function login(
