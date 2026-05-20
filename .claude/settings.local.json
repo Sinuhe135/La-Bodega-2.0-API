@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell([System.IO.Directory]::GetFileSystemEntries\\(\"C:\\\\Users\\\\rayma\\\\OneDrive\\\\Documentos\\\\Proyectos\\\\La-Bodega-2.0\\\\src\\\\modules\\\\groups\\\\row_types\"\\))"
+    ]
+  }
+}
