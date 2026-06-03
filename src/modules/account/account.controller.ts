@@ -4,14 +4,26 @@ import { AuthLocals } from '../../types/auth_locals'
 import { GetAllAccountsResponseDto } from './dtos/get_all_accounts_response.dto'
 import { AppError } from '../../utils/app_error.utils'
 import { PaginationParams } from '../../types/pagination_params'
+import * as accountService from './account.service'
+import { CategoryParamDto } from './dtos/category_param.dto'
 
-export async function getAllAccounts(
-    req: Request<{}, {}, {}, PaginationParams>,
+export async function getAllAccountsByCategory(
+    req: Request<CategoryParamDto, {}, {}, PaginationParams>,
     res: Response<GetAllAccountsResponseDto[] | ErrorResponse, AuthLocals>
 ) {
     try {
         const { page, limit } = req.query
-        res.status(200).send([])
+        const categoryId = req.params.categoryId
+            ? parseInt(req.params.categoryId)
+            : undefined
+
+        const accounts = await accountService.getAllAccountsByCategory(
+            res.locals.userId,
+            categoryId,
+            page,
+            limit
+        )
+        res.status(200).send(accounts)
     } catch (error) {
         if (error instanceof AppError) {
             res.status(error.statusCode).send({ error: error.message })

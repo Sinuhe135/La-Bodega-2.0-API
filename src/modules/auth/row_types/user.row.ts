@@ -4,5 +4,5 @@ export interface UserRow extends RowDataPacket {
     id: number
     lastLogin: Date
     creationDate: Date
-    deleted: boolean
+    deleted: 0 | 1
 }

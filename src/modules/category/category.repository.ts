@@ -22,3 +22,14 @@ export async function selectAllCategoriesByUserId(
     )
     return results
 }
+
+export async function selectCategoryById(
+    id: number,
+    userId: number
+): Promise<CategoryRow | null> {
+    const [results] = await pool.query<CategoryRow[]>(
+        'select id, name, userId, deleted from CATEGORY where id = ? AND userId = ? AND deleted = 0',
+        [id, userId]
+    )
+    return results[0] ?? null
+}

@@ -9,6 +9,6 @@ export interface AccountRow extends RowDataPacket {
     platform: string
     creationDate: Date
     lastModifiedDate: Date
-    groupId: number
-    deleted: number
+    categoryId: number
+    deleted: 0 | 1
 }
