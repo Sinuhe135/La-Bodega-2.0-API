@@ -1,6 +1,7 @@
+import { PaginatedResult } from '../../types/pagination'
 import { AppError } from '../../utils/app_error.utils'
 import { selectCategoryById } from '../category/category.repository'
-import { insertAccount, selectAllAccountsByCategoryId } from './account.repository'
+import { countAccountsByCategoryId, insertAccount, selectAllAccountsByCategoryId } from './account.repository'
 import { CreateAccountResponseDto } from './dtos/create_account_response.dto'
 import { GetAllAccountsResponseDto } from './dtos/get_all_accounts_response.dto'
 
@@ -12,7 +13,7 @@ export async function getAllAccountsByCategory(
     categoryId: number | undefined,
     page: string | undefined,
     limit: string | undefined
-): Promise<GetAllAccountsResponseDto[]> {
+): Promise<PaginatedResult<GetAllAccountsResponseDto>> {
     if (categoryId == undefined) {
         throw new AppError(400, 'Category ID is required')
     }
@@ -30,18 +31,28 @@ export async function getAllAccountsByCategory(
 
     const offset = (parsedPage - 1) * parsedLimit
 
-    const rows = await selectAllAccountsByCategoryId(category.id, parsedLimit, offset)
-    return rows.map(({ id, name, username, email, password, platform, creationDate, lastModifiedDate, groupId }) => ({
-        id,
-        name,
-        username,
-        email,
-        password,
-        platform,
-        creationDate,
-        lastModifiedDate,
-        groupId,
-    }))
+    const [rows, totalAccounts] = await Promise.all([
+        selectAllAccountsByCategoryId(category.id, parsedLimit, offset),
+        countAccountsByCategoryId(category.id),
+    ])
+    return {
+        data: rows.map(
+            ({ id, name, username, email, password, platform, creationDate, lastModifiedDate, groupId }) => ({
+                id,
+                name,
+                username,
+                email,
+                password,
+                platform,
+                creationDate,
+                lastModifiedDate,
+                groupId,
+            })
+        ),
+        page: parsedPage,
+        limit: parsedLimit,
+        totalPages: Math.ceil(totalAccounts / parsedLimit),
+    }
 }
 
 export async function createAccount(

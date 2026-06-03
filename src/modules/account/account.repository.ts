@@ -1,4 +1,4 @@
-import { ResultSetHeader } from 'mysql2'
+import { ResultSetHeader, RowDataPacket } from 'mysql2'
 import pool from '../../config/database'
 import { AccountRow } from './row_types/account.row'
 
@@ -12,6 +12,19 @@ export async function selectAllAccountsByCategoryId(
         [categoryId, limit, offset]
     )
     return results
+}
+
+export async function countAccountsByCategoryId(categoryId: number): Promise<number> {
+    const [results] = await pool.query<RowDataPacket[]>(
+        'select count(*) as total from ACCOUNT where categoryId = ? AND deleted = 0',
+        [categoryId]
+    )
+
+    if (results.length === 0) {
+        return 0
+    }
+
+    return results[0]!.total as number
 }
 
 export async function insertAccount(
