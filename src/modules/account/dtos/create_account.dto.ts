@@ -4,5 +4,5 @@ export interface CreateAccountDto {
     email: string
     password: string
     platform: string
-    groupId: number
+    categoryId: number
 }

@@ -1,6 +1,7 @@
 import { AppError } from '../../utils/app_error.utils'
 import { selectCategoryById } from '../category/category.repository'
-import { selectAllAccountsByCategoryId } from './account.repository'
+import { insertAccount, selectAllAccountsByCategoryId } from './account.repository'
+import { CreateAccountResponseDto } from './dtos/create_account_response.dto'
 import { GetAllAccountsResponseDto } from './dtos/get_all_accounts_response.dto'
 
 const DEFAULT_PAGE = 1
@@ -29,32 +30,34 @@ export async function getAllAccountsByCategory(
 
     const offset = (parsedPage - 1) * parsedLimit
 
-    const rows = await selectAllAccountsByCategoryId(
-        category.id,
-        parsedLimit,
-        offset
-    )
-    return rows.map(
-        ({
-            id,
-            name,
-            username,
-            email,
-            password,
-            platform,
-            creationDate,
-            lastModifiedDate,
-            groupId,
-        }) => ({
-            id,
-            name,
-            username,
-            email,
-            password,
-            platform,
-            creationDate,
-            lastModifiedDate,
-            groupId,
-        })
-    )
+    const rows = await selectAllAccountsByCategoryId(category.id, parsedLimit, offset)
+    return rows.map(({ id, name, username, email, password, platform, creationDate, lastModifiedDate, groupId }) => ({
+        id,
+        name,
+        username,
+        email,
+        password,
+        platform,
+        creationDate,
+        lastModifiedDate,
+        groupId,
+    }))
+}
+
+export async function createAccount(
+    name: string,
+    username: string,
+    email: string,
+    password: string,
+    platform: string,
+    categoryId: number,
+    userId: number
+): Promise<number> {
+    const category = await selectCategoryById(categoryId, userId)
+    if (!category) {
+        throw new AppError(404, 'Category not found')
+    }
+
+    const id = await insertAccount(name, username, email, password, platform, categoryId)
+    return id
 }
