@@ -5,9 +5,11 @@ import authRouter from './modules/auth/auth.router'
 import categoryRouter from './modules/category/category.router'
 import accountRouter from './modules/account/account.router'
 import env from './config/env'
+import cors from './config/cors'
 
 const app = express()
 app.use(express.json())
+app.use(cors)
 
 app.use('/api/auth', authRouter)
 app.use('/api/category', categoryRouter)
