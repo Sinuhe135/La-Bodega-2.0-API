@@ -1,7 +1,7 @@
 import cors from 'cors'
 import env from './env'
 
-let permitedIP: string[] = []
+let permitedIP: string[] = ['https://labodega.velazduran.com']
 
 if (env.NODE_ENV !== 'production') {
     permitedIP.push('http://localhost:3000')
