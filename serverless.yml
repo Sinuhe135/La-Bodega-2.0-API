@@ -1,0 +1,83 @@
+service: labodega-api
+
+useDotenv: true
+
+provider:
+    name: aws
+    runtime: nodejs20.x
+    region: us-east-1
+    httpApi:
+        cors:
+            allowedOrigins:
+                - https://labodega.velazduran.com
+                - http://localhost:3000
+            allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - OPTIONS
+            allowedHeaders:
+                - Content-Type
+                - Authorization
+            allowCredentials: true
+
+plugins:
+    - serverless-offline
+
+functions:
+    signup:
+        handler: dist/functions/auth/signup.handler
+        events:
+            - httpApi:
+                  path: /auth/signup
+                  method: post
+
+    check:
+        handler: dist/functions/auth/check.handler
+        events:
+            - httpApi:
+                  path: /auth/check
+                  method: get
+
+    login:
+        handler: dist/functions/auth/login.handler
+        events:
+            - httpApi:
+                  path: /auth/login
+                  method: post
+
+    current:
+        handler: dist/functions/auth/current.handler
+        events:
+            - httpApi:
+                  path: /auth/current
+                  method: get
+
+    getAllCategories:
+        handler: dist/functions/category/get_all.handler
+        events:
+            - httpApi:
+                  path: /category/all
+                  method: get
+
+    createCategory:
+        handler: dist/functions/category/create.handler
+        events:
+            - httpApi:
+                  path: /category
+                  method: post
+
+    getAllAccountsByCategory:
+        handler: dist/functions/account/get_all_by_category.handler
+        events:
+            - httpApi:
+                  path: /account/all/{categoryId}
+                  method: get
+
+    createAccount:
+        handler: dist/functions/account/create.handler
+        events:
+            - httpApi:
+                  path: /account
+                  method: post

@@ -51,7 +51,7 @@ export async function getAllAccountsByCategory(
         ),
         page: parsedPage,
         limit: parsedLimit,
-        totalPages: Math.ceil(totalAccounts / parsedLimit),
+        totalItems: totalAccounts,
     }
 }
 

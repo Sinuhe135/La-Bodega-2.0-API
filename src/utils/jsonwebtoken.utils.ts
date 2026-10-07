@@ -1,26 +1,24 @@
 import jwt from 'jsonwebtoken'
 import env from '../config/env'
-import { JwtVerification } from '../types/jwt_verification'
 import { AuthJwtPayloadDto } from '../modules/auth/dtos/auth_jwt_payload.dto'
+import { AppError } from './app_error.utils'
+
+const jwtExpirationTime = 3600 // 1 hour in seconds
 
 export function generateAuthJwt(data: AuthJwtPayloadDto): string {
-    return jwt.sign(data, env.JWT_KEY, { expiresIn: 3600 }) // 1 hour
+    return jwt.sign(data, env.JWT_KEY, { expiresIn: jwtExpirationTime })
 }
 
-export function verifyAuthJwt(token: string): JwtVerification {
+export function getJwtPayload(token: string): AuthJwtPayloadDto {
     try {
         const decoded = jwt.verify(token, env.JWT_KEY)
         const payload = mapAuthPayload(decoded)
-
-        return { payload: payload, expired: false }
+        return payload
     } catch (error) {
-        if (
-            error instanceof jwt.JsonWebTokenError &&
-            error.name === 'TokenExpiredError'
-        ) {
-            return { payload: null, expired: true }
+        if (error instanceof jwt.JsonWebTokenError && error.name === 'TokenExpiredError') {
+            throw new AppError(401, 'Expired session')
         } else {
-            return { payload: null, expired: false }
+            throw new AppError(401, 'Invalid session')
         }
     }
 }
